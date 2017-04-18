@@ -1,5 +1,6 @@
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (newChan, readChan, writeChan, Chan)
+import qualified Control.Concurrent.ThreadManager as TM
 import Control.Monad
 
 -- Opponent team, game service, and exploit program types
@@ -18,8 +19,11 @@ main = do
   let exploit = "./kek.py"
   let tgs = (,) <$> opponents <*> services
 
+  tm <- TM.make
   c <- newChan
-  forM tgs $ \(o, s) -> forkIO $ do
+  forM tgs $ \(o, s) -> TM.fork tm $ do
       fs <- own exploit o s
       forM_ fs $ writeChan c
-  forever $ readChan c >>= (putStrLn . ("Got flag: " ++))
+  sequence $ take (length tgs) $ repeat $
+    readChan c >>= (putStrLn . ("Got flag: " ++))
+  TM.waitForAll tm
