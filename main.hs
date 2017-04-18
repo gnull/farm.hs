@@ -19,7 +19,7 @@ main = do
   let tgs = (,) <$> opponents <*> services
 
   c <- newChan
-  forM tgs $ \(o, s) -> do
-    fs <- own exploit o s
-    forM fs $ writeChan c
+  forM tgs $ \(o, s) -> forkIO $ do
+      fs <- own exploit o s
+      forM_ fs $ writeChan c
   forever $ readChan c >>= (putStrLn . ("Got flag: " ++))
