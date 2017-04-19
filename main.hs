@@ -1,3 +1,5 @@
+import Data.Functor
+import Control.Applicative
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (newChan, readChan, writeChan, Chan)
 import qualified Control.Concurrent.ThreadManager as TM
