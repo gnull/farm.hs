@@ -18,7 +18,7 @@ own e o s = lines <$> readProcess e [o, s] ""
 main = do
   let opponents = ["127.0.0.1", "127.0.0.2", "127.0.0.3"]
   let services  = ["1234", "80", "8080"]
-  let exploit = "./kek.py"
+  let exploit = "echo"
   let tgs = (,) <$> opponents <*> services
 
   tm <- TM.make
