@@ -48,4 +48,3 @@ main = do
   forM tgs $ TM.fork tm . (uncurry $ thread c exploit)
   fs <- readNChan c (length tgs)
   forM_ fs $ putStrLn . ("Got flag: " ++)
-  TM.waitForAll tm
