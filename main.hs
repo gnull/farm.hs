@@ -18,9 +18,8 @@ own :: Expl -> Oppo -> Serv -> IO [Flag]
 own e o s = lines <$> readProcess e [o, s] ""
 
 thread :: Chan (Maybe Flag) -> Expl -> Oppo -> Serv -> IO ()
-thread c e o s = flip finally (closeNChan c) $ do
-    fs <- own e o s
-    forM_ fs $ writeNChan c
+thread c e o s = flip finally (closeNChan c) $
+  own e o s >>= mapM_ (writeNChan c)
 
 -- Functions that implement a channel closable by N threads on top of Chan
 
