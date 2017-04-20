@@ -8,6 +8,7 @@ import System.Process (readProcess)
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (Options))
+import Web (serverStart)
 
 -- Opponent team, game service, and exploit program types
 type Oppo = String
@@ -25,7 +26,9 @@ loop as = do
   loop $ delete a as
 
 main = do
+  srv <- async serverStart
   (Options e as oFile reg) <- parse
   o <- lines <$> readFile oFile
   as <- mapM (async . own e as reg) o
   loop as
+  wait srv
