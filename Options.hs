@@ -5,7 +5,8 @@ import Data.Semigroup ((<>))
 
 data Options = Options
   { exploit    :: FilePath
-  , targets    :: String }
+  , targets    :: String
+  , regex      :: String }
 
 sample :: Parser Options
 sample = Options
@@ -16,6 +17,10 @@ sample = Options
           ( long "targets"
          <> help "File containing list of target IP addresses"
          <> metavar "FILE" )
+      <*> strOption
+          ( long "flagre"
+         <> help "POSIX regex for flag"
+         <> metavar "REGEX")
 
 parse :: IO (Options)
 parse = execParser opts

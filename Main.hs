@@ -5,6 +5,7 @@ import Control.Monad
 import Control.Concurrent.Async (forConcurrently, async, wait, Async, waitAny, asyncThreadId)
 import Data.List (delete)
 import System.Process (readProcess)
+import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (Options))
 
@@ -13,8 +14,8 @@ type Oppo = String
 type Expl = FilePath
 type Flag = String
 
-own :: Expl -> Oppo -> IO [Flag]
-own e o = lines <$> readProcess e [o] ""
+own :: Expl -> String -> Oppo -> IO [Flag]
+own e r o = getAllTextMatches <$> (=~ r) <$> readProcess e [o] ""
 
 loop :: [Async [Flag]] -> IO ()
 loop [] = pure ()
@@ -24,7 +25,7 @@ loop as = do
   loop $ delete a as
 
 main = do
-  (Options e oFile) <- parse
+  (Options e oFile reg) <- parse
   o <- lines <$> readFile oFile
-  as <- mapM (async . own e) o
+  as <- mapM (async . own e reg) o
   loop as
