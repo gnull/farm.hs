@@ -1,3 +1,5 @@
+module Main where
+
 import Control.Applicative
 import Control.Monad
 import Control.Concurrent.Async (forConcurrently)
