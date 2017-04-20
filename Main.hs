@@ -2,7 +2,7 @@ module Main where
 
 import Control.Applicative
 import Control.Monad
-import Control.Concurrent.Async (forConcurrently)
+import Control.Concurrent.Async (forConcurrently, async, wait, Async)
 import System.Process (readProcess)
 
 import Options (parse, Options (Options))
@@ -15,8 +15,11 @@ type Flag = String
 own :: Expl -> Oppo -> IO [Flag]
 own e o = lines <$> readProcess e [o] ""
 
+loop :: [Async [Flag]] -> IO ()
+loop as = mapM wait as >>= putStrLn . unlines . concat
+
 main = do
   (Options e oFile) <- parse
   o <- lines <$> readFile oFile
-  fs <- forConcurrently o $ own e
-  forM_ (concat fs) $ putStrLn . ("Got flag: " ++)
+  as <- mapM (async . own e) o
+  loop as
