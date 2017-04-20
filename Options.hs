@@ -1,36 +1,26 @@
+module Options where
+
 import Options.Applicative
 import Data.Semigroup ((<>))
 
-data Sample = Sample
-  { hello      :: String
-  , quiet      :: Bool
-  , enthusiasm :: Int }
+data Options = Options
+  { exploit    :: FilePath
+  , targets    :: String }
 
-sample :: Parser Sample
-sample = Sample
-      <$> strOption
-          ( long "hello"
-         <> metavar "TARGET"
-         <> help "Target for the greeting" )
-      <*> switch
-          ( long "quiet"
-         <> short 'q'
-         <> help "Whether to be quiet" )
-      <*> option auto
-          ( long "enthusiasm"
-         <> help "How enthusiastically to greet"
-         <> showDefault
-         <> value 1
-         <> metavar "INT" )
+sample :: Parser Options
+sample = Options
+      <$> argument str
+          ( metavar "PROGRAM"
+         <> help "Exploit program" )
+      <*> strOption
+          ( long "targets"
+         <> help "File containing list of target IP addresses"
+         <> metavar "FILE" )
 
-main :: IO ()
-main = greet =<< execParser opts
+parse :: IO (Options)
+parse = execParser opts
   where
     opts = info (sample <**> helper)
       ( fullDesc
-     <> progDesc "Print a greeting for TARGET"
-     <> header "hello - a test for optparse-applicative" )
-
-greet :: Sample -> IO ()
-greet (Sample h False n) = putStrLn $ "Hello, " ++ h ++ replicate n '!'
-greet _ = return ()
+     <> progDesc "Run an exploit on list of target hosts"
+     <> header "Helper program for Attack-Defence CTF competitions" )
