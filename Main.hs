@@ -3,7 +3,6 @@ module Main where
 import Control.Applicative
 import Control.Monad
 import Control.Concurrent.Async (forConcurrently)
-import Control.Exception (finally)
 import System.Process (readProcess)
 
 import Options (parse, Options (Options))
