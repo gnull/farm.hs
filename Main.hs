@@ -14,8 +14,8 @@ type Oppo = String
 type Expl = FilePath
 type Flag = String
 
-own :: Expl -> String -> Oppo -> IO [Flag]
-own e r o = getAllTextMatches <$> (=~ r) <$> readProcess e [o] ""
+own :: Expl -> [String] -> String -> Oppo -> IO [Flag]
+own e as r o = getAllTextMatches <$> (=~ r) <$> readProcess e (as ++ [o]) ""
 
 loop :: [Async [Flag]] -> IO ()
 loop [] = pure ()
@@ -25,7 +25,7 @@ loop as = do
   loop $ delete a as
 
 main = do
-  (Options e oFile reg) <- parse
+  (Options e as oFile reg) <- parse
   o <- lines <$> readFile oFile
-  as <- mapM (async . own e reg) o
+  as <- mapM (async . own e as reg) o
   loop as
