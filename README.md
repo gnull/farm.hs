@@ -2,6 +2,6 @@ USAGE
 =====
 
 ```sh
-ghc --make -threaded Main
-./Main --help
+cabal install
+farm-hs --help
 ```
