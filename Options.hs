@@ -15,7 +15,7 @@ sample = Options
           ( metavar "PROGRAM"
          <> help "Exploit program" )
       <*> (many $ argument str $
-            metavar "ARG"
+            metavar "[ARG1 [ARG2 ...]]"
          <> help "Arguments for exploit PROGRAM")
       <*> strOption
           ( long "targets"
