@@ -2,7 +2,8 @@ module Main where
 
 import Control.Applicative
 import Control.Monad
-import Control.Concurrent.Async (forConcurrently, async, wait, Async, waitAny, asyncThreadId)
+import Control.Concurrent (threadDelay)
+import Control.Concurrent.Async (forConcurrently, async, wait, Async, waitAnyCancel, asyncThreadId)
 import Data.List (delete)
 import System.Process (readProcess)
 import Text.Regex.Posix (getAllTextMatches, (=~))
@@ -18,17 +19,12 @@ type Flag = String
 own :: Expl -> [String] -> String -> Oppo -> IO [Flag]
 own e as r o = getAllTextMatches <$> (=~ r) <$> readProcess e (as ++ [o]) ""
 
-loop :: [Async [Flag]] -> IO ()
-loop [] = pure ()
-loop as = do
-  (a, fs) <- waitAny as
-  putStrLn $ (show . asyncThreadId) a ++ ": " ++ unwords fs
-  loop $ delete a as
+processResult :: [Flag] -> IO ()
+processResult = mapM_ $ putStrLn . ("Got flag: " ++)
 
 main = do
   srv <- async serverStart
   (Options e as oFile reg) <- parse
   o <- lines <$> readFile oFile
-  as <- mapM (async . own e as reg) o
-  loop as
-  wait srv
+  as <- forM o $ async . forever . (>> threadDelay 20000000) . (>>= processResult) . own e as reg
+  waitAnyCancel $ srv : as
