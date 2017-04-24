@@ -19,12 +19,15 @@ type Flag = String
 own :: Expl -> [String] -> String -> Oppo -> IO [Flag]
 own e as r o = getAllTextMatches <$> (=~ r) <$> readProcess e (as ++ [o]) ""
 
-processResult :: [Flag] -> IO ()
-processResult = mapM_ $ putStrLn . ("Got flag: " ++)
+thread :: Expl -> [String] -> String -> Oppo -> IO ()
+thread e as r o = forever $ do
+  fs <- own e as r o
+  forM_ fs $ putStrLn . ("Got flag: " ++)
+  threadDelay 20000000
 
 main = do
   srv <- async serverStart
   (Options e as oFile reg) <- parse
   o <- lines <$> readFile oFile
-  as <- forM o $ async . forever . (>> threadDelay 20000000) . (>>= processResult) . own e as reg
+  as <- forM o $ async . thread e as reg
   waitAnyCancel $ srv : as
