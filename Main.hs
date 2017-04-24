@@ -22,7 +22,7 @@ own e as r o = getAllTextMatches <$> (=~ r) <$> readProcess e (as ++ [o]) ""
 thread :: Expl -> [String] -> String -> Oppo -> IO ()
 thread e as r o = forever $ do
   fs <- own e as r o
-  forM_ fs $ putStrLn . ("Got flag: " ++)
+  forM_ fs $ putStrLn . (("[" ++ o ++ "] got flag: ") ++)
   threadDelay 20000000
 
 main = do
