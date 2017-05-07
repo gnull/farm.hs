@@ -9,7 +9,6 @@ import System.Process (readProcess)
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (Options))
-import Web (serverStart)
 
 -- Opponent team, game service, and exploit program types
 type Oppo = String
@@ -26,8 +25,7 @@ thread e as r o = forever $ do
   threadDelay 20000000
 
 main = do
-  srv <- async serverStart
   (Options e as oFile reg) <- parse
   o <- lines <$> readFile oFile
   as <- forM o $ async . thread e as reg
-  waitAnyCancel $ srv : as
+  waitAnyCancel as

@@ -60,7 +60,7 @@ executable farm-hs
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.6, optparse-applicative >=0.13, semigroups >=0.18, async >=2.1, process >=1.2, regex-posix >=0.95, happstack-server >=7.4
+  build-depends:       base >=4.6, optparse-applicative >=0.13, semigroups >=0.18, async >=2.1, process >=1.2, regex-posix >=0.95
 
   -- Directories containing source files.
   -- hs-source-dirs:
