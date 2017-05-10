@@ -10,15 +10,15 @@ import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (Options))
 
-type Oppo = String                  -- Opponent team
+type Team = String                  -- Opponent team
 type Expl = (FilePath, [String])    -- Exploit program and its extra arguments
 type Flag = String                  -- Flag
 type Flagre = String                -- Flag regex
 
-own :: Expl -> Flagre -> Oppo -> IO [Flag]
+own :: Expl -> Flagre -> Team -> IO [Flag]
 own (e, as) r o = getAllTextMatches <$> (=~ r) <$> readProcess e (as ++ [o]) ""
 
-thread :: Expl -> Flagre -> Oppo -> IO ()
+thread :: Expl -> Flagre -> Team -> IO ()
 thread e r o = forever $ do
   fs <- own e r o
   forM_ fs $ putStrLn . (("[" ++ o ++ "] got flag: ") ++)
