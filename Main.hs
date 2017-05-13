@@ -3,8 +3,7 @@ module Main where
 import Control.Applicative
 import Control.Monad
 import Control.Concurrent (threadDelay)
-import Control.Concurrent.Async (forConcurrently, async, wait, Async, waitAnyCancel, asyncThreadId)
-import Data.List (delete)
+import Control.Concurrent.Async (async, waitAnyCancel)
 import System.Process (readProcess)
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
