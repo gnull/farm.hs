@@ -7,6 +7,7 @@ data Options = Options
   { exploit    :: FilePath
   , args       :: [String]
   , targets    :: String
+  , sumbit     :: String
   , regex      :: String }
 
 sample :: Parser Options
@@ -22,6 +23,11 @@ sample = Options
          <> short 't'
          <> help "File containing list of target IP addresses"
          <> metavar "FILE" )
+      <*> strOption
+          ( long "submit"
+         <> short 's'
+         <> help "Shell command to submit flags. This command will get flag in `flag` environment variable. E.g. `echo $flag`"
+         <> metavar "COMMAND")
       <*> strOption
           ( long "flagre"
          <> short 'r'

@@ -15,17 +15,25 @@ type Expl = (FilePath, [String])    -- Exploit program and its extra arguments
 type Flag = String                  -- Flag
 type Flagre = String                -- Flag regex
 
-own :: Expl -> Flagre -> Team -> IO [Flag]
-own (e, as) r o = getAllTextMatches <$> (=~ r) <$> readProcess e (as ++ [o]) ""
+submit :: String -> Flag -> IO ()
+submit s f = do
+  out <- readProcess "env" ["flag=" ++ f, "sh", "-xefu"] s
+  putStrLn $ "submit result:" ++ out
 
-thread :: Expl -> Flagre -> Team -> IO ()
-thread e r o = forever $ do
+own :: Expl -> Flagre -> Team -> IO [Flag]
+own (e, as) r o = do
+  stdout <- readProcess e (as ++ [o]) ""
+  let result = getAllTextMatches $ (=~ r) $ stdout
+  return result
+
+thread :: String -> Expl -> Flagre -> Team -> IO ()
+thread s e r o = forever $ do
   fs <- own e r o
-  forM_ fs $ putStrLn . (("[" ++ o ++ "] got flag: ") ++)
+  forM_ fs $ submit s
   threadDelay 20000000
 
 main = do
-  (Options e as oFile reg) <- parse
+  (Options e as oFile sub reg) <- parse
   o <- lines <$> readFile oFile
-  as <- forM o $ async . thread (e, as) reg
+  as <- forM o $ async . thread sub (e, as) reg
   waitAnyCancel as
