@@ -4,7 +4,7 @@ import Control.Applicative
 import Control.Monad
 import Control.Concurrent (threadDelay)
 import Control.Concurrent.Async (async, waitAnyCancel)
-import System.Process (readProcess, readCreateProcess, CreateProcess (..), proc)
+import System.Process (readProcess, readCreateProcessWithExitCode, CreateProcess (..), proc)
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (Options))
@@ -17,8 +17,8 @@ type Flagre = String                -- Flag regex
 submit :: String -> Flag -> IO ()
 submit s f = do
   let p = (proc "sh" ["-xefu"]) { env = Just [("flag", f)] }
-  out <- readCreateProcess p s
-  putStrLn $ "submit result:" ++ out
+  (ret, out, err) <- readCreateProcessWithExitCode p s
+  putStrLn $ "shell command " ++ show s ++ " returned " ++ show ret ++ ", stdout = " ++ show out ++ ", stderr = " ++ show err
 
 own :: Expl -> Flagre -> Team -> IO [Flag]
 own (e, as) r o = do
