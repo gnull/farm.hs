@@ -5,7 +5,7 @@ import Control.Arrow ((&&&))
 import Control.Monad
 import Control.Concurrent (threadDelay, MVar, newMVar, modifyMVar)
 import Control.Concurrent.Async (async, waitAnyCancel)
-import System.Process (readProcess, readCreateProcessWithExitCode, CreateProcess (..), proc)
+import System.Process (readProcessWithExitCode, readCreateProcessWithExitCode, CreateProcess (..), proc)
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (Options))
@@ -28,7 +28,8 @@ submit s f = do
 
 own :: Expl -> Flagre -> Team -> IO [Flag]
 own (e, as) r o = do
-  stdout <- readProcess e (as ++ [o]) ""
+  (ret, stdout, stderr) <- readProcessWithExitCode e (as ++ [o]) ""
+  putStrLn $ "command " ++ show (e : as ++ [o]) ++ " returned " ++ show ret ++ ", stderr = " ++ show stderr
   let result = getAllTextMatches $ (=~ r) $ stdout
   return result
 
