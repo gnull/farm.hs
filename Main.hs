@@ -6,6 +6,7 @@ import Control.Monad
 import Control.Concurrent (threadDelay, MVar, newMVar, modifyMVar)
 import Control.Concurrent.Async (async, waitAnyCancel)
 import System.Process (readProcessWithExitCode, readCreateProcessWithExitCode, CreateProcess (..), proc)
+import System.Exit (ExitCode)
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (Options))
@@ -20,17 +21,24 @@ type TeamQueue = MVar [Team]        -- Infinite queue of teams
 popTeam :: TeamQueue -> IO Team
 popTeam = flip modifyMVar $ return . (tail &&& head)
 
+pprintRet :: Show a => a -> (ExitCode, String, String) -> [Flag] -> String
+pprintRet cmd (ret, out, err) flags = unlines
+  $  [show cmd ++ " returned " ++ show ret]
+  ++ map ("  stderr: " ++) (lines err)
+  ++ map ("  stdout: " ++) (lines out)
+  ++ map ("    flag: " ++) flags
+
 submit :: String -> Flag -> IO ()
 submit s f = do
   let p = (proc "sh" ["-xefu"]) { env = Just [("flag", f)] }
-  (ret, out, err) <- readCreateProcessWithExitCode p s
-  putStrLn $ "shell command " ++ show s ++ " returned " ++ show ret ++ ", stdout = " ++ show out ++ ", stderr = " ++ show err
+  ret <- readCreateProcessWithExitCode p s
+  putStrLn $ pprintRet s ret []
 
 own :: Expl -> Flagre -> Team -> IO [Flag]
 own (e, as) r o = do
   (ret, out, err) <- readProcessWithExitCode e (as ++ [o]) ""
-  putStrLn $ "command " ++ show (e : as ++ [o]) ++ " returned " ++ show ret ++ ", stderr = " ++ show err
   let result = getAllTextMatches $ (=~ r) $ out
+  putStrLn $ pprintRet ([e] ++ as ++ [o]) (ret, out, err) result
   return result
 
 thread :: String -> Expl -> Flagre -> TeamQueue -> IO ()
