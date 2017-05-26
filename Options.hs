@@ -9,6 +9,7 @@ data Options = Options
   , targets    :: String
   , sumbit     :: String
   , jobs       :: Int
+  , delay      :: Int
   , regex      :: String }
 
 sample :: Parser Options
@@ -34,6 +35,11 @@ sample = Options
           <> short 'j'
           <> help "Number of parallel running exploit jobs"
           <> metavar "N"))
+      <*> (read <$> strOption
+           ( long "delay"
+          <> short 'd'
+          <> help "Number of seconds to wait after each exploit run"
+          <> metavar "SECS"))
       <*> strOption
           ( long "flagre"
          <> short 'r'

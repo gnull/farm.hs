@@ -41,16 +41,16 @@ own (e, as) r o = do
   putStrLn $ pprintRet ([e] ++ as ++ [o]) (ret, out, err) result
   return result
 
-thread :: String -> Expl -> Flagre -> TeamQueue -> IO ()
-thread s e r q = forever $ do
+thread :: Int -> String -> Expl -> Flagre -> TeamQueue -> IO ()
+thread d s e r q = forever $ do
   o <- popTeam q
   fs <- own e r o
   forM_ fs $ submit s
-  threadDelay 20000000
+  threadDelay $ d * 1000000
 
 main = do
-  (Options e as oFile sub js' reg) <- parse
+  (Options e as oFile sub js' delay reg) <- parse
   (o, js) <- (cycle &&& min js' . length) <$> lines <$> readFile oFile
   m <- newMVar o
-  as <- sequence $ replicate js $ async $ thread sub (e, as) reg m
+  as <- sequence $ replicate js $ async $ thread delay sub (e, as) reg m
   waitAnyCancel as
