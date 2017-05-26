@@ -8,6 +8,7 @@ data Options = Options
   , args       :: [String]
   , targets    :: String
   , sumbit     :: String
+  , jobs       :: Int
   , regex      :: String }
 
 sample :: Parser Options
@@ -28,6 +29,11 @@ sample = Options
          <> short 's'
          <> help "Shell command to submit flags. This command will get flag in `flag` environment variable. E.g. `echo $flag`"
          <> metavar "COMMAND")
+      <*> (read <$> strOption
+           ( long "jobs"
+          <> short 'j'
+          <> help "Number of parallel running exploit jobs"
+          <> metavar "N"))
       <*> strOption
           ( long "flagre"
          <> short 'r'

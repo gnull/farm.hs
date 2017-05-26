@@ -33,7 +33,7 @@ thread s e r o = forever $ do
   threadDelay 20000000
 
 main = do
-  (Options e as oFile sub reg) <- parse
+  (Options e as oFile sub js reg) <- parse
   o <- lines <$> readFile oFile
   as <- forM o $ async . thread sub (e, as) reg
   waitAnyCancel as
