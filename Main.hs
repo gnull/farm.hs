@@ -41,8 +41,8 @@ thread s e r q = forever $ do
   threadDelay 20000000
 
 main = do
-  (Options e as oFile sub js reg) <- parse
-  o <- cycle <$> lines <$> readFile oFile
+  (Options e as oFile sub js' reg) <- parse
+  (o, js) <- (cycle &&& min js' . length) <$> lines <$> readFile oFile
   m <- newMVar o
   as <- sequence $ replicate js $ async $ thread sub (e, as) reg m
   waitAnyCancel as
