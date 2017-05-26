@@ -28,9 +28,9 @@ submit s f = do
 
 own :: Expl -> Flagre -> Team -> IO [Flag]
 own (e, as) r o = do
-  (ret, stdout, stderr) <- readProcessWithExitCode e (as ++ [o]) ""
-  putStrLn $ "command " ++ show (e : as ++ [o]) ++ " returned " ++ show ret ++ ", stderr = " ++ show stderr
-  let result = getAllTextMatches $ (=~ r) $ stdout
+  (ret, out, err) <- readProcessWithExitCode e (as ++ [o]) ""
+  putStrLn $ "command " ++ show (e : as ++ [o]) ++ " returned " ++ show ret ++ ", stderr = " ++ show err
+  let result = getAllTextMatches $ (=~ r) $ out
   return result
 
 thread :: String -> Expl -> Flagre -> TeamQueue -> IO ()
