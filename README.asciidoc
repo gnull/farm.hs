@@ -1,8 +1,8 @@
 = `farm-hs`
 :toc:
 
-Program for running an exploit on many opponent teams in parallel, collecting
-flags and sumbitting them to a jury checker.
+`farm-hs` is a program for running an exploit on many opponent teams in parallel,
+collecting flags and sumbitting them to a jury checker.
 
 == Usage
 
