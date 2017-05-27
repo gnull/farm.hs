@@ -1,10 +1,9 @@
 Program for running an exploit on many opponent teams in parallel, collecting
 flags and sumbitting them to a jury checker.
 
-Usage
-=====
+== Usage
 
-```
+----
 $ farm-hs --help
 Helper program for Attack-Defence CTF competitions
 
@@ -24,36 +23,36 @@ Available options:
   -d,--delay SECS          Number of seconds to wait after each exploit run
   -r,--flagre REGEX        POSIX regex for flag
   -h,--help                Show this help text
-```
+----
 
 `farm-hs` can also generate bash completion for itself. Feeding it into your bash
 is straightforward:
 
-```sh
+[source,bash]
+----
 source <(farm-hs --bash-completion-script `which farm-hs`)
-```
+----
 
 You can add this line directly into your `.bashrc`.
                
-Installation
-============
+== Installation
 
 If you don't want to bother yourself building `farm-hs` from source check out
-the [releases](https://github.com/gnull/farm.hs/releases) page. It contains
+the https://github.com/gnull/farm.hs/releases[releases] page. It contains
 prebuilt static binaries for x86 and x86-64.
 
 `farm-hs` can be built and installed either in `~/.cabal/bin` using
 `cabal-install`:
 
-```sh
+----
 cabal build
 cabal install
-```
+----
 
 or in `~/.local/bin` using `stack`:
 
-```sh
+----
 stack setup
 stack build
 stack install
-```
+----
