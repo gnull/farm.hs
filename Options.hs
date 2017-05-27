@@ -17,7 +17,7 @@ sample = Options
       <$> argument str
           ( metavar "PROGRAM"
          <> help "Exploit program" )
-      <*> (many $ argument str $
+      <*> ( many $ argument str $
             metavar "[ARG1 [ARG2 ...]]"
          <> help "Arguments for exploit PROGRAM")
       <*> strOption
@@ -31,15 +31,15 @@ sample = Options
          <> help "Shell command to submit flags. This command will get flag in `flag` environment variable. E.g. `echo $flag`"
          <> metavar "COMMAND")
       <*> (read <$> strOption
-           ( long "jobs"
-          <> short 'j'
-          <> help "Number of parallel running exploit jobs"
-          <> metavar "N"))
+          ( long "jobs"
+         <> short 'j'
+         <> help "Number of parallel running exploit jobs"
+         <> metavar "N"))
       <*> (read <$> strOption
-           ( long "delay"
-          <> short 'd'
-          <> help "Number of seconds to wait after each exploit run"
-          <> metavar "SECS"))
+          ( long "delay"
+         <> short 'd'
+         <> help "Number of seconds to wait after each exploit run"
+         <> metavar "SECS"))
       <*> strOption
           ( long "flagre"
          <> short 'r'
