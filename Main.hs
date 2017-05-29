@@ -52,5 +52,5 @@ main = do
   (Options e as oFile sub js' delay reg) <- parse
   (o, js) <- (cycle &&& min js' . length) <$> lines <$> readFile oFile
   m <- newMVar o
-  as <- sequence $ replicate js $ async $ thread delay sub (e, as) reg m
+  as <- replicateM js $ async $ thread delay sub (e, as) reg m
   waitAnyCancel as
