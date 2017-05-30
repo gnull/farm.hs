@@ -24,8 +24,8 @@ pprintRet cmd (ret, out, err) flags = unlines
   ++ map ("  stdout: " ++) (lines out)
   ++ map ("    flag: " ++) flags
 
-submit :: Chan String -> String -> Flag -> IO ()
-submit c s f = do
+submitFlag :: Chan String -> String -> Flag -> IO ()
+submitFlag c s f = do
   let p = (proc "sh" ["-xefu"]) { env = Just [("flag", f)] }
   ret <- readCreateProcessWithExitCode p s
   writeChan c $ pprintRet s ret []
@@ -41,7 +41,7 @@ thread :: Options -> IO ()
 thread os = forever $ do
   team <- popTeam (queue os)
   fs <- own os team
-  forM_ fs $ submit (logChan os) (sumbit os)
+  forM_ fs $ submitFlag (logChan os) (submit os)
   threadDelay $ delay os * 1000000
 
 main = do

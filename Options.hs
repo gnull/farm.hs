@@ -13,7 +13,7 @@ data Options' = Options'
   { exploit'   :: FilePath
   , args'      :: [String]
   , targets'   :: String
-  , sumbit'    :: String
+  , submit'    :: String
   , jobs'      :: Int
   , delay'     :: Int
   , regex'     :: String }
@@ -22,7 +22,7 @@ data Options = Options
   { exploit    :: FilePath
   , args       :: [String]
   , targets    :: [String]
-  , sumbit     :: String
+  , submit     :: String
   , jobs       :: Int
   , delay      :: Int
   , regex      :: String
@@ -43,7 +43,7 @@ sample = do
          <> short 't'
          <> help "File containing list of target IP addresses"
          <> metavar "FILE"
-   sumbit' <- strOption $
+   submit' <- strOption $
             long "submit"
          <> short 's'
          <> help "Shell command to submit flags. This command will get flag in `flag` environment variable. E.g. `echo $flag`"
@@ -70,7 +70,7 @@ checkOptions o = do
   let exploit = exploit' o
   let args = args' o
   targets <- lines <$> readFile (targets' o)
-  let sumbit = sumbit' o
+  let submit = submit' o
   let jobs = min (length targets) (jobs' o)
   let delay = delay' o
   let regex = regex' o
