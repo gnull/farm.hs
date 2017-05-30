@@ -54,5 +54,5 @@ main = do
   m <- newMVar o
   c <- newChan
   as <- replicateM js $ async $ thread c delay sub (e, as) reg m
-  logger <- async $ getChanContents c >>= mapM putStrLn
-  waitAnyCancel $ (const () <$> logger) : as
+  logger <- async $ getChanContents c >>= mapM_ putStrLn
+  waitAnyCancel $ logger : as
