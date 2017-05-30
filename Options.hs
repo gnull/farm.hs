@@ -7,6 +7,8 @@ import Options.Applicative
 import Data.Semigroup ((<>))
 import Data.Maybe (fromMaybe)
 
+import Control.Concurrent (MVar, newMVar, Chan, newChan)
+
 data Options' = Options'
   { exploit'   :: FilePath
   , args'      :: [String]
@@ -23,7 +25,10 @@ data Options = Options
   , sumbit     :: String
   , jobs       :: Int
   , delay      :: Int
-  , regex      :: String }
+  , regex      :: String
+  , logChan    :: Chan String
+  , queue      :: MVar [String]
+  }
 
 sample :: Parser Options'
 sample = do
@@ -69,6 +74,8 @@ checkOptions o = do
   let jobs = min (length targets) (jobs' o)
   let delay = delay' o
   let regex = regex' o
+  logChan <- newChan
+  queue <- newMVar $ cycle targets
   return Options {..}
 
 parse :: IO (Options)

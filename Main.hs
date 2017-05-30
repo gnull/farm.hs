@@ -50,8 +50,6 @@ thread c d s e r q = forever $ do
 
 main = do
   os <- parse
-  m <- newMVar $ cycle $ targets os
-  c <- newChan
-  as <- replicateM (jobs os) $ async $ thread c (delay os) (sumbit os) (exploit os, args os) (regex os) m
-  logger <- async $ getChanContents c >>= mapM_ putStrLn
+  as <- replicateM (jobs os) $ async $ thread (logChan os) (delay os) (sumbit os) (exploit os, args os) (regex os) (queue os)
+  logger <- async $ getChanContents (logChan os) >>= mapM_ putStrLn
   waitAnyCancel $ logger : as
