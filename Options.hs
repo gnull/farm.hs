@@ -14,7 +14,7 @@ data Options' = Options'
   , args'      :: [String]
   , targets'   :: String
   , submit'    :: String
-  , jobs'      :: Int
+  , jobs'      :: Maybe Int
   , delay'     :: Int
   , regex'     :: String }
 
@@ -48,7 +48,7 @@ sample = do
          <> short 's'
          <> help "Shell command to submit flags. This command will get flag in `flag` environment variable. E.g. `echo $flag`"
          <> metavar "COMMAND"
-   jobs' <- fmap read $ strOption $
+   jobs' <- fmap (read <$>) $ optional $ strOption $
             long "jobs"
          <> short 'j'
          <> help "Number of parallel running exploit jobs"
@@ -71,7 +71,7 @@ checkOptions o = do
   let args = args' o
   targets <- lines <$> readFile (targets' o)
   let submit = submit' o
-  let jobs = min (length targets) (jobs' o)
+  let jobs = min (length targets) (fromMaybe (length targets) $ jobs' o)
   let delay = delay' o
   let regex = regex' o
   logChan <- newChan
