@@ -3,7 +3,7 @@ module Main where
 import Control.Applicative
 import Control.Arrow ((&&&))
 import Control.Monad
-import Control.Concurrent (threadDelay, MVar, newMVar, modifyMVar, Chan, newChan, getChanContents, writeChan)
+import Control.Concurrent (threadDelay, MVar, modifyMVar, Chan, getChanContents, writeChan)
 import Control.Concurrent.Async (async, waitAnyCancel)
 import System.Process (readProcessWithExitCode, readCreateProcessWithExitCode, CreateProcess (..), proc)
 import System.Exit (ExitCode)
