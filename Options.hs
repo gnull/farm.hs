@@ -20,7 +20,7 @@ sample = do
    exploit <- argument str $
             metavar "PROGRAM"
          <> help "Exploit program"
-   args <-  many $ argument str $
+   args <- many $ argument str $
             metavar "[ARG1 [ARG2 ...]]"
          <> help "Arguments for exploit PROGRAM"
    targets <- strOption $
@@ -33,16 +33,16 @@ sample = do
          <> short 's'
          <> help "Shell command to submit flags. This command will get flag in `flag` environment variable. E.g. `echo $flag`"
          <> metavar "COMMAND"
-   jobs <-  read <$> strOption
-          ( long "jobs"
+   jobs <- fmap read $ strOption $
+            long "jobs"
          <> short 'j'
          <> help "Number of parallel running exploit jobs"
-         <> metavar "N")
-   delay <-  read <$> strOption
-          ( long "delay"
+         <> metavar "N"
+   delay <- fmap read $ strOption $
+            long "delay"
          <> short 'd'
          <> help "Number of seconds to wait after each exploit run"
-         <> metavar "SECS")
+         <> metavar "SECS"
    regex <- strOption $
             long "flagre"
          <> short 'r'
