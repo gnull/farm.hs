@@ -9,7 +9,7 @@ import System.Process (readProcessWithExitCode, readCreateProcessWithExitCode, C
 import System.Exit (ExitCode)
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
-import Options (parse, Options (Options))
+import Options (parse, Options (..))
 
 type Team = String                  -- Opponent team
 type Expl = (FilePath, [String])    -- Exploit program and its extra arguments
@@ -49,10 +49,9 @@ thread c d s e r q = forever $ do
   threadDelay $ d * 1000000
 
 main = do
-  (Options e as oFile sub js' delay reg) <- parse
-  (o, js) <- (cycle &&& min js' . length) <$> lines <$> readFile oFile
-  m <- newMVar o
+  os <- parse
+  m <- newMVar $ cycle $ targets os
   c <- newChan
-  as <- replicateM js $ async $ thread c delay sub (e, as) reg m
+  as <- replicateM (jobs os) $ async $ thread c (delay os) (sumbit os) (exploit os, args os) (regex os) m
   logger <- async $ getChanContents c >>= mapM_ putStrLn
   waitAnyCancel $ logger : as
