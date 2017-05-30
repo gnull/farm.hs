@@ -12,13 +12,9 @@ import Text.Regex.Posix (getAllTextMatches, (=~))
 import Options (parse, Options (..))
 
 type Team = String                  -- Opponent team
-type Expl = (FilePath, [String])    -- Exploit program and its extra arguments
 type Flag = String                  -- Flag
-type Flagre = String                -- Flag regex
 
-type TeamQueue = MVar [Team]        -- Infinite queue of teams
-
-popTeam :: TeamQueue -> IO Team
+popTeam :: MVar [Team] -> IO Team
 popTeam = flip modifyMVar $ return . (tail &&& head)
 
 pprintRet :: Show a => a -> (ExitCode, String, String) -> [Flag] -> String
