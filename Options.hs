@@ -5,6 +5,7 @@ module Options where
 
 import Options.Applicative
 import Data.Semigroup ((<>))
+import Data.Maybe (fromMaybe)
 
 data Options = Options
   { exploit    :: FilePath
@@ -38,10 +39,10 @@ sample = do
          <> short 'j'
          <> help "Number of parallel running exploit jobs"
          <> metavar "N"
-   delay <- fmap read $ strOption $
+   delay <- fmap (fromMaybe 0) $ optional $ fmap read $ strOption $
             long "delay"
          <> short 'd'
-         <> help "Number of seconds to wait after each exploit run"
+         <> help "Number of seconds to wait after each exploit run (defaults to 0)"
          <> metavar "SECS"
    regex <- strOption $
             long "flagre"
