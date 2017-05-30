@@ -34,22 +34,22 @@ submit c s f = do
   ret <- readCreateProcessWithExitCode p s
   writeChan c $ pprintRet s ret []
 
-own :: Chan String -> Expl -> Flagre -> Team -> IO [Flag]
-own c (e, as) r o = do
-  (ret, out, err) <- readProcessWithExitCode e (as ++ [o]) ""
-  let result = getAllTextMatches $ (=~ r) $ out
-  writeChan c $ pprintRet ([e] ++ as ++ [o]) (ret, out, err) result
+own :: Options -> Team -> IO [Flag]
+own os team = do
+  (ret, out, err) <- readProcessWithExitCode (exploit os) (args os ++ [team]) ""
+  let result = getAllTextMatches $ (=~ regex os) $ out
+  writeChan (logChan os) $ pprintRet ([exploit os] ++ args os ++ [team]) (ret, out, err) result
   return result
 
-thread :: Chan String -> Int -> String -> Expl -> Flagre -> TeamQueue -> IO ()
-thread c d s e r q = forever $ do
-  o <- popTeam q
-  fs <- own c e r o
-  forM_ fs $ submit c s
-  threadDelay $ d * 1000000
+thread :: Options -> IO ()
+thread os = forever $ do
+  team <- popTeam (queue os)
+  fs <- own os team
+  forM_ fs $ submit (logChan os) (sumbit os)
+  threadDelay $ delay os * 1000000
 
 main = do
   os <- parse
-  as <- replicateM (jobs os) $ async $ thread (logChan os) (delay os) (sumbit os) (exploit os, args os) (regex os) (queue os)
+  as <- replicateM (jobs os) $ async $ thread os
   logger <- async $ getChanContents (logChan os) >>= mapM_ putStrLn
   waitAnyCancel $ logger : as
