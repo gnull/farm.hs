@@ -3,7 +3,7 @@ module Main where
 import Control.Applicative
 import Control.Arrow ((&&&))
 import Control.Monad
-import Control.Concurrent (threadDelay, MVar, newMVar, modifyMVar)
+import Control.Concurrent (threadDelay, MVar, newMVar, modifyMVar, Chan, newChan, getChanContents, writeChan)
 import Control.Concurrent.Async (async, waitAnyCancel)
 import System.Process (readProcessWithExitCode, readCreateProcessWithExitCode, CreateProcess (..), proc)
 import System.Exit (ExitCode)
@@ -28,29 +28,31 @@ pprintRet cmd (ret, out, err) flags = unlines
   ++ map ("  stdout: " ++) (lines out)
   ++ map ("    flag: " ++) flags
 
-submit :: String -> Flag -> IO ()
-submit s f = do
+submit :: Chan String -> String -> Flag -> IO ()
+submit c s f = do
   let p = (proc "sh" ["-xefu"]) { env = Just [("flag", f)] }
   ret <- readCreateProcessWithExitCode p s
-  putStrLn $ pprintRet s ret []
+  writeChan c $ pprintRet s ret []
 
-own :: Expl -> Flagre -> Team -> IO [Flag]
-own (e, as) r o = do
+own :: Chan String -> Expl -> Flagre -> Team -> IO [Flag]
+own c (e, as) r o = do
   (ret, out, err) <- readProcessWithExitCode e (as ++ [o]) ""
   let result = getAllTextMatches $ (=~ r) $ out
-  putStrLn $ pprintRet ([e] ++ as ++ [o]) (ret, out, err) result
+  writeChan c $ pprintRet ([e] ++ as ++ [o]) (ret, out, err) result
   return result
 
-thread :: Int -> String -> Expl -> Flagre -> TeamQueue -> IO ()
-thread d s e r q = forever $ do
+thread :: Chan String -> Int -> String -> Expl -> Flagre -> TeamQueue -> IO ()
+thread c d s e r q = forever $ do
   o <- popTeam q
-  fs <- own e r o
-  forM_ fs $ submit s
+  fs <- own c e r o
+  forM_ fs $ submit c s
   threadDelay $ d * 1000000
 
 main = do
   (Options e as oFile sub js' delay reg) <- parse
   (o, js) <- (cycle &&& min js' . length) <$> lines <$> readFile oFile
   m <- newMVar o
-  as <- replicateM js $ async $ thread delay sub (e, as) reg m
-  waitAnyCancel as
+  c <- newChan
+  as <- replicateM js $ async $ thread c delay sub (e, as) reg m
+  logger <- async $ getChanContents c >>= mapM putStrLn
+  waitAnyCancel $ (const () <$> logger) : as
