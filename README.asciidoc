@@ -11,7 +11,7 @@ $ farm-hs --help
 Helper program for Attack-Defence CTF competitions
 
 Usage: farm-hs PROGRAM [[ARG1 [ARG2 ...]]] (-t|--targets FILE)
-               (-s|--submit COMMAND) (-j|--jobs N) (-d|--delay SECS)
+               (-s|--submit COMMAND) [-j|--jobs N] [-d|--delay SECS]
                (-r|--flagre REGEX)
   Run an exploit on list of target hosts
 
@@ -24,6 +24,7 @@ Available options:
                            $flag`
   -j,--jobs N              Number of parallel running exploit jobs
   -d,--delay SECS          Number of seconds to wait after each exploit run
+                           (defaults to 0)
   -r,--flagre REGEX        POSIX regex for flag
   -h,--help                Show this help text
 ----
