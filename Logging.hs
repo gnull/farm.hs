@@ -1,4 +1,4 @@
-module Logging where
+module Logging (showLog, LogMsg (..)) where
 
 import System.Exit (ExitCode)
 

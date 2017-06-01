@@ -1,7 +1,7 @@
 {-# LANGUAGE RecordWildCards            #-}
 {-# LANGUAGE ApplicativeDo              #-}
 
-module Options where
+module Options (parse, Options (..)) where
 
 import Options.Applicative
 import Data.Semigroup ((<>))
