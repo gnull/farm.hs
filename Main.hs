@@ -3,7 +3,6 @@
 module Main where
 
 import Control.Applicative
-import Control.Arrow ((&&&))
 import Control.Monad
 import Data.Maybe (maybeToList)
 import System.Process (readProcessWithExitCode, readCreateProcessWithExitCode, CreateProcess (..), proc)
