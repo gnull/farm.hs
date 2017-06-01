@@ -21,10 +21,10 @@ workForever jobs todo worker saver logger = do
   asyncs <- replicateM jobs $ async $ forever $ do
     w <- popQueue queue
     (l, fs) <- worker w
-    logger l
+    writeChan log l
     ls <- mapM saver fs
-    mapM_ logger ls
+    forM_ ls $ writeChan log
     -- (logger *** mapM (logger =<< saver)) =<< worker =<< popQueue queue
-  logJob <- async $ getChanContents log >>= mapM_ putStrLn
+  logJob <- async $ getChanContents log >>= mapM_ logger
   waitAnyCancel $ logJob : asyncs
   return ()
