@@ -10,16 +10,13 @@ import Options (parse, Options (..))
 import Logging (showLog, LogMsg (..))
 import Concurrenncy (workForever)
 
-type Team = String                  -- Opponent team
-type Flag = String                  -- Flag
-
-submitFlag :: String -> Flag -> IO LogMsg
+submitFlag :: String -> String -> IO LogMsg
 submitFlag s f = do
   let p = (proc "sh" ["-xefu"]) { env = Just [("flag", f)] }
   (ret, out, err) <- readCreateProcessWithExitCode p s
   return $ SubmMsg s ret out err
 
-own :: Options -> Team -> IO (LogMsg, [Flag])
+own :: Options -> String -> IO (LogMsg, [String])
 own os team = do
   (ret, out, err) <- readProcessWithExitCode (exploit os) (args os ++ [team]) ""
   let result = getAllTextMatches $ (=~ regex os) $ out
