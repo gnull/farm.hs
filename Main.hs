@@ -23,7 +23,7 @@ own :: String -> [String] -> String -> String -> IO (LogMsg, [String])
 own exploit args regex team = do
   (ret, out, err) <- readProcessWithExitCode exploit (args ++ [team]) ""
   let result = getAllTextMatches $ (=~ regex) $ out
-  return (ExplMsg ([exploit] ++ args ++ [team]) ret out err result, result)
+  return $ flip (,) result $ ExplMsg ([exploit] ++ args ++ [team]) ret out err result
 
 main = do
   Options {..} <- parse
