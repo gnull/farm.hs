@@ -10,6 +10,7 @@ import System.Exit (ExitCode)
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (..))
+import Logging (showLog, LogMsg (..))
 
 type Team = String                  -- Opponent team
 type Flag = String                  -- Flag
@@ -17,24 +18,17 @@ type Flag = String                  -- Flag
 popTeam :: MVar [Team] -> IO Team
 popTeam = flip modifyMVar $ return . (tail &&& head)
 
-pprintRet :: Show a => a -> (ExitCode, String, String) -> [Flag] -> String
-pprintRet cmd (ret, out, err) flags = unlines
-  $  [show cmd ++ " returned " ++ show ret]
-  ++ map ("  stderr: " ++) (lines err)
-  ++ map ("  stdout: " ++) (lines out)
-  ++ map ("    flag: " ++) flags
-
-submitFlag :: Chan String -> String -> Flag -> IO ()
+submitFlag :: Chan LogMsg -> String -> Flag -> IO ()
 submitFlag c s f = do
   let p = (proc "sh" ["-xefu"]) { env = Just [("flag", f)] }
-  ret <- readCreateProcessWithExitCode p s
-  writeChan c $ pprintRet s ret []
+  (ret, out, err) <- readCreateProcessWithExitCode p s
+  writeChan c $ SubmMsg s ret out err
 
 own :: Options -> Team -> IO [Flag]
 own os team = do
   (ret, out, err) <- readProcessWithExitCode (exploit os) (args os ++ [team]) ""
   let result = getAllTextMatches $ (=~ regex os) $ out
-  writeChan (logChan os) $ pprintRet ([exploit os] ++ args os ++ [team]) (ret, out, err) result
+  writeChan (logChan os) $ ExplMsg ([exploit os] ++ args os ++ [team]) ret out err result
   return result
 
 thread :: Options -> IO ()
@@ -47,5 +41,5 @@ thread os = forever $ do
 main = do
   os <- parse
   as <- replicateM (jobs os) $ async $ thread os
-  logger <- async $ getChanContents (logChan os) >>= mapM_ putStrLn
+  logger <- async $ getChanContents (logChan os) >>= mapM_ (putStrLn . showLog)
   waitAnyCancel $ logger : as

@@ -9,6 +9,8 @@ import Data.Maybe (fromMaybe)
 
 import Control.Concurrent (MVar, newMVar, Chan, newChan)
 
+import Logging (LogMsg)
+
 data Options' = Options'
   { exploit'   :: FilePath
   , args'      :: [String]
@@ -26,7 +28,7 @@ data Options = Options
   , jobs       :: Int
   , delay      :: Int
   , regex      :: String
-  , logChan    :: Chan String
+  , logChan    :: Chan LogMsg
   , queue      :: MVar [String]
   }
 
