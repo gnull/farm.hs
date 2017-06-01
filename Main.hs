@@ -1,8 +1,11 @@
+{-# LANGUAGE RecordWildCards            #-}
+
 module Main where
 
 import Control.Applicative
 import Control.Arrow ((&&&))
 import Control.Monad
+import Data.Maybe (maybeToList)
 import System.Process (readProcessWithExitCode, readCreateProcessWithExitCode, CreateProcess (..), proc)
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
@@ -16,16 +19,17 @@ submitFlag s f = do
   (ret, out, err) <- readCreateProcessWithExitCode p s
   return $ SubmMsg s ret out err
 
-own :: Options -> String -> IO (LogMsg, [String])
-own os team = do
-  (ret, out, err) <- readProcessWithExitCode (exploit os) (args os ++ [team]) ""
-  let result = getAllTextMatches $ (=~ regex os) $ out
-  return (ExplMsg ([exploit os] ++ args os ++ [team]) ret out err result, result)
+own :: String -> [String] -> String -> String -> IO (LogMsg, [String])
+own exploit args regex team = do
+  (ret, out, err) <- readProcessWithExitCode exploit (args ++ [team]) ""
+  let result = getAllTextMatches $ (=~ regex) $ out
+  return (ExplMsg ([exploit] ++ args ++ [team]) ret out err result, result)
 
 main = do
-  os <- parse
-  workForever (jobs os)
-              (targets os)
-              (own os)
-              (submitFlag $ submit os)
+  Options {..} <- parse
+  targetsList <- lines <$> readFile targets
+  workForever (minimum $ length targetsList : maybeToList jobs)
+              targetsList
+              (own exploit args regex)
+              (submitFlag $ submit)
               (putStrLn . showLog)
