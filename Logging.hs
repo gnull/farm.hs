@@ -1,4 +1,4 @@
-module Logging (showLog, LogMsg (..)) where
+module Logging (showLog, showLogColor, LogMsg (..)) where
 
 import System.Exit (ExitCode)
 
@@ -12,6 +12,17 @@ showLog' cmd (ret, out, err) flags = unlines
   ++ map ("  stdout: " ++) (lines out)
   ++ map ("    flag: " ++) flags
 
+showLogColor' :: Show a => a -> (ExitCode, String, String) -> [String] -> String
+showLogColor' cmd (ret, out, err) flags = unlines
+  $  [show cmd ++ " returned " ++ show ret]
+  ++ map ("  stderr: " ++) (lines err)
+  ++ map ("  stdout: " ++) (lines out)
+  ++ map ("    flag: " ++) flags
+
 showLog :: LogMsg -> String
 showLog (ExplMsg cmd ret out err fs) = showLog' cmd (ret, out, err) fs
 showLog (SubmMsg cmd ret out err   ) = showLog' cmd (ret, out, err) []
+
+showLogColor :: LogMsg -> String
+showLogColor (ExplMsg cmd ret out err fs) = showLogColor' cmd (ret, out, err) fs
+showLogColor (SubmMsg cmd ret out err   ) = showLogColor' cmd (ret, out, err) []

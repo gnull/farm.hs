@@ -9,7 +9,7 @@ import System.Process (readProcessWithExitCode, readCreateProcessWithExitCode, C
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (..))
-import Logging (showLog, LogMsg (..))
+import Logging (showLog, showLogColor, LogMsg (..))
 import Concurrenncy (workForever)
 
 submitFlag :: String -> String -> IO LogMsg
@@ -31,4 +31,4 @@ main = do
               targetsList
               (own exploit args regex)
               (submitFlag $ submit)
-              (putStrLn . showLog)
+              (putStrLn . if color then showLogColor else showLog)

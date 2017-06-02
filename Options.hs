@@ -14,6 +14,7 @@ data Options = Options
   , submit    :: String
   , jobs      :: Maybe Int
   , regex     :: String
+  , color     :: Bool
   }
 
 sample :: Parser Options
@@ -44,6 +45,10 @@ sample = do
          <> short 'r'
          <> help "POSIX regex for flag"
          <> metavar "REGEX"
+   color <- switch $
+            long "color"
+         <> short 'c'
+         <> help "Enable colors in output"
    pure Options {..}
 
 parse :: IO (Options)
