@@ -13,8 +13,8 @@ data Options = Options
   , targets   :: String
   , submit    :: String
   , jobs      :: Maybe Int
-  , delay     :: Int
-  , regex     :: String }
+  , regex     :: String
+  }
 
 sample :: Parser Options
 sample = do
@@ -39,11 +39,6 @@ sample = do
          <> short 'j'
          <> help "Number of parallel running exploit jobs"
          <> metavar "N"
-   delay <- fmap (fromMaybe 0) $ optional $ fmap read $ strOption $
-            long "delay"
-         <> short 'd'
-         <> help "Number of seconds to wait after each exploit run (defaults to 0)"
-         <> metavar "SECS"
    regex <- strOption $
             long "flagre"
          <> short 'r'
