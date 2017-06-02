@@ -45,10 +45,10 @@ sample = do
          <> short 'r'
          <> help "POSIX regex for flag"
          <> metavar "REGEX"
-   color <- switch $
-            long "color"
+   color <- fmap not $ switch $
+            long "nocolor"
          <> short 'c'
-         <> help "Enable colors in output"
+         <> help "Disable colors in output"
    pure Options {..}
 
 parse :: IO (Options)
