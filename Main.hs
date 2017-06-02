@@ -10,7 +10,7 @@ import System.Process (readProcessWithExitCode, readCreateProcessWithExitCode, C
 import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (..))
-import Logging (showLog, showLogColor, LogMsg (..))
+import Logging (showLog, showLogPlain, LogMsg (..))
 import Concurrenncy (workForever)
 
 submitFlag :: String -> String -> IO LogMsg
@@ -31,8 +31,9 @@ own exploit args regex team = do
 main = do
   Options {..} <- parse
   targetsList <- lines <$> readFile targets
+  let logFun = if color then showLog else showLogPlain
   workForever (minimum $ length targetsList : maybeToList jobs)
               targetsList
               (own exploit args regex)
               (submitFlag $ submit)
-              (putStrLn . if color then showLogColor else showLog)
+              logFun

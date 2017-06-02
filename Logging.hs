@@ -1,35 +1,36 @@
-module Logging (showLog, showLogColor, LogMsg (..)) where
+module Logging (showLog, showLogPlain, LogMsg (..)) where
 
 -- Maybe I should use https://hackage.haskell.org/package/ansi-wl-pprint ?
-import System.Console.ANSI
-import System.Exit (ExitCode)
+import Prelude hiding ((<$>))
+import Text.PrettyPrint.ANSI.Leijen
+import System.Exit (ExitCode (..))
 
 data LogMsg = ExplMsg [String] ExitCode String String [String]
             | SubmMsg String ExitCode String String
 
-showLog' :: Show a => a -> (ExitCode, String, String) -> [String] -> String
-showLog' cmd (ret, out, err) flags = unlines
-  $  [show cmd ++ " returned " ++ show ret]
-  ++ map ("  stderr: " ++) (lines err)
-  ++ map ("  stdout: " ++) (lines out)
-  ++ map ("    flag: " ++) flags
+heading :: String -> Doc -> Doc
+heading h x = indent 2 $ (cyan $ text h) <> colon <+> align x
 
-stdoutCode = setSGRCode [SetColor Foreground Vivid Yellow]
-stderrCode = setSGRCode [SetColor Foreground Vivid Magenta]
-flagsCode = setSGRCode [SetColor Foreground Vivid Green, SetBlinkSpeed SlowBlink]
-resetCode = setSGRCode [Reset]
+title :: Show a => String -> a -> ExitCode -> Doc
+title t r e = cyan (underline $ text t <+> (text . show) r <> colon) <+> exitCode e
 
-showLogColor' :: Show a => a -> (ExitCode, String, String) -> [String] -> String
-showLogColor' cmd (ret, out, err) flags = unlines
-  $  [show cmd ++ " returned " ++ show ret]
-  ++ map (("  stderr: " ++) . (stdoutCode ++) . (++ resetCode)) (lines err)
-  ++ map (("  stdout: " ++) . (stderrCode ++) . (++ resetCode)) (lines out)
-  ++ map (("    flag: " ++) . (flagsCode ++) . (++ resetCode)) flags
+exitCode :: ExitCode -> Doc
+exitCode x@ExitSuccess = text $ show x
+exitCode x@(ExitFailure _) = red $ text $ show x
 
-showLog :: LogMsg -> String
-showLog (ExplMsg cmd ret out err fs) = showLog' cmd (ret, out, err) fs
-showLog (SubmMsg cmd ret out err   ) = showLog' cmd (ret, out, err) []
+logDoc :: LogMsg -> Doc
+logDoc (ExplMsg cmd ret out err fs) = title "Exploit" cmd ret
+  <$> heading "stdout" (string out)
+  <$> heading "stderr" (string err)
+  <$> heading "flags" (green $ align $ fillSep $ map (string . show) fs)
+  <$> line
+logDoc (SubmMsg cmd ret out err) = title "Submit" cmd ret
+  <$> heading "stdout" (string out)
+  <$> heading "stderr" (string err)
+  <$> line
 
-showLogColor :: LogMsg -> String
-showLogColor (ExplMsg cmd ret out err fs) = showLogColor' cmd (ret, out, err) fs
-showLogColor (SubmMsg cmd ret out err   ) = showLogColor' cmd (ret, out, err) []
+showLog :: LogMsg -> IO ()
+showLog = putDoc . logDoc
+
+showLogPlain :: LogMsg -> IO ()
+showLogPlain = putDoc . plain . logDoc
