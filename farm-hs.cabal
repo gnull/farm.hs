@@ -52,6 +52,8 @@ executable farm-hs
   ghc-options:
     -O2
     -threaded
+  -- This line will compile static executable:
+  --  -static -optc-static -optl-static
 
   -- Modules included in this executable, other than Main.
   other-modules: Options Concurrenncy Logging
