@@ -56,7 +56,7 @@ executable farm-hs
   --  -static -optc-static -optl-static
 
   -- Modules included in this executable, other than Main.
-  other-modules: Options Concurrenncy Logging
+  other-modules: Options Concurrency Logging
 
   -- LANGUAGE extensions used by modules in this package.
   -- other-extensions:

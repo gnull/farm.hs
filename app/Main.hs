@@ -11,7 +11,7 @@ import Text.Regex.Posix (getAllTextMatches, (=~))
 
 import Options (parse, Options (..))
 import Logging (showLog, showLogPlain, LogMsg (..))
-import Concurrenncy (workForever)
+import Concurrency (workForever)
 
 submitFlag :: String -> String -> IO LogMsg
 submitFlag s f = do

@@ -1,4 +1,4 @@
-module Concurrenncy (workForever) where
+module Concurrency (workForever) where
 
 import Control.Applicative
 import Control.Arrow ((&&&), (***))
