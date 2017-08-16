@@ -11,9 +11,10 @@ name:                farm-hs
 --                   | | +----- non-breaking API additions
 --                   | | | +--- code changes with no API change
 version:             0.1.0.0
+homepage:            https://github.com/gnull/farm-hs
 
 -- A short (one-line) description of the package.
--- synopsis:
+synopsis: Helper program for executing exploits at classic CTF competitions
 
 -- A longer description of the package.
 -- description:
@@ -62,7 +63,13 @@ executable farm-hs
   -- other-extensions:
 
   -- Other library packages from which modules are imported.
-  build-depends:       base >=4.6, optparse-applicative >=0.13, semigroups >=0.18, async >=2.1, process >=1.2, regex-posix >=0.95, ansi-wl-pprint >=0.6
+  build-depends:       base >=4.6
+                     , optparse-applicative >=0.13
+                     , semigroups >=0.18
+                     , async >=2.1
+                     , process >=1.2
+                     , regex-posix >=0.95
+                     , ansi-wl-pprint >=0.6
 
   -- Directories containing source files.
   hs-source-dirs: app
